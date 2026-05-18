@@ -180,12 +180,12 @@ void QRangeSlider::mousePressEvent(QMouseEvent* e)
         int normalizedHandleSize = (static_cast<double>(HANDLE_SIZE) / width()) * (maximum_ - minimum_);
 
         if (lastMouseValue_ >= (static_cast<int>(lowValue_) - normalizedHandleSize) &&
-            lastMouseValue_ < (lowValue_ + normalizedHandleSize))
+            lastMouseValue_ <= (lowValue_ + normalizedHandleSize))
         {
             handleClicked_ = 0;
         }
         else if (lastMouseValue_ >= (highValue_ - normalizedHandleSize) &&
-            lastMouseValue_ < (highValue_ + normalizedHandleSize))
+            lastMouseValue_ <= (highValue_ + normalizedHandleSize))
         {
             handleClicked_ = 1;
         }
