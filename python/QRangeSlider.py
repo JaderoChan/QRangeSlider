@@ -1,6 +1,8 @@
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize
+from typing import override
+
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QRectF
 from PyQt5.QtWidgets import QWidget, QSizePolicy
-from PyQt5.QtGui import QPainter, QColorConstants, QPen, QBrush, QColor
+from PyQt5.QtGui import QPainter, QColorConstants, QPen, QBrush, QColor, QMouseEvent, QPaintEvent
 
 class QRangeSlider(QWidget):
 
@@ -15,7 +17,7 @@ class QRangeSlider(QWidget):
 
     # Value of the last mouse click
     _lastMouseValue = -1
-    
+
     # Whether the slider bar can be drag
     _barDraggable = False
 
@@ -36,7 +38,7 @@ class QRangeSlider(QWidget):
     lowValueChange = pyqtSignal(int)
     highValueChange = pyqtSignal(int)
     rangeChange = pyqtSignal(int, int)
-    
+
     def __init__(self, parent = None):
         super().__init__(parent)
 
@@ -77,7 +79,7 @@ class QRangeSlider(QWidget):
         if self._maximum != maximum:
             self._maximum = maximum
             if self._maximum <= self._minimum:
-                self.setMinimum(self._maximum + 1)
+                self.setMinimum(self._maximum - 1)
                 self.setHighValue(self._maximum)
                 self.setLowValue(self._minimum)
             elif self._maximum <= self._lowValue:
@@ -92,7 +94,7 @@ class QRangeSlider(QWidget):
 
     def lowValue(self):
         return self._lowValue
-    
+
     @pyqtSlot(int)
     def setLowValue(self, lowValue):
         if self._lowValue != lowValue:
@@ -109,7 +111,7 @@ class QRangeSlider(QWidget):
 
     def highValue(self):
         return self._highValue
-    
+
     @pyqtSlot(int)
     def setHighValue(self, highValue):
         if self._highValue != highValue:
@@ -126,7 +128,7 @@ class QRangeSlider(QWidget):
 
     def step(self):
         return self._step
-    
+
     def setStep(self, step):
         self._step = step
 
@@ -151,11 +153,11 @@ class QRangeSlider(QWidget):
             mouseValue = int((mouseX / self.width()) * (self._maximum - self._minimum) + self._minimum)
             self._lastMouseValue = mouseValue
 
-            if self._lastMouseValue >= self._lowValue - 1 and self._lastMouseValue < self._lowValue + 1:
+            if (self.getLowHandleRect().contains(mouseEvent.pos())):
                 self._handleClicked = 0
-            elif self._lastMouseValue >= self._highValue -1 and self._lastMouseValue < self._highValue + 1:
+            if (self.getHighHandleRect().contains(mouseEvent.pos())):
                 self._handleClicked = 1
-            elif self._lastMouseValue < self._highValue and self._lastMouseValue > self._lowValue:
+            if (self.getRangeRect().contains(mouseEvent.pos())):
                 self._handleClicked = 2
 
     def mouseReleaseEvent(self, mouseEvent):
@@ -185,35 +187,45 @@ class QRangeSlider(QWidget):
         # Draw background
         painter.setPen(QPen(QColorConstants.DarkGray, 0.8))
         painter.setBrush(QBrush(QColor(QColorConstants.LightGray)))
-        painter.drawRoundedRect(self.PADDING, 
-                                (self.height() - self.SLIDER_HEIGHT) / 2,
-                                self.width() - 2 * self.PADDING,
-                                self.SLIDER_HEIGHT,
-                                2,
-                                2)
-        
+        painter.drawRoundedRect(self.getBackgroundRect(), 2, 2)
+
         # Draw range
         painter.setBrush(QBrush(QColor(0x1E, 0x90, 0xFF)))
-        painter.drawRect(self.PADDING + ((self.width() - 2 * self.PADDING) * (self._lowValue - self._minimum) / (self._maximum - self._minimum)),
-                         (self.height() - self.SLIDER_HEIGHT) / 2,
-                         (self.width() - 2 * self.PADDING) * (self._highValue - self._lowValue) / (self._maximum - self._minimum),
-                         self.SLIDER_HEIGHT)
-        
+        painter.drawRect(self.getRangeRect())
+
         # Draw lower handle
         painter.setBrush(QBrush(QColor(QColorConstants.White)))
-        painter.drawRoundedRect(self.PADDING + ((self.width() - 2 * self.PADDING) * (self._lowValue - self._minimum) / (self._maximum - self._minimum)),
-                                (self.height() - self.HANDLE_SIZE) / 2,
-                                self.HANDLE_SIZE,
-                                self.HANDLE_SIZE,
-                                2,
-                                2)
-        
+        painter.drawRoundedRect(self.getLowHandleRect(), 2, 2)
+
         # Draw higher handle
-        painter.drawRoundedRect(self.PADDING + ((self.width() - 2 * self.PADDING) * (self._highValue - self._minimum) / (self._maximum - self._minimum)) - self.HANDLE_SIZE,
-                                (self.height() - self.HANDLE_SIZE) / 2,
-                                self.HANDLE_SIZE,
-                                self.HANDLE_SIZE,
-                                2,
-                                2)
-        
+        painter.drawRoundedRect(self.getHighHandleRect(), 2, 2)
+
         painter.end()
+
+    def getBackgroundRect(self):
+        return QRectF(
+            self.PADDING,
+            (self.height() - self.SLIDER_HEIGHT) / 2,
+            self.width() - 2 * self.PADDING,
+            self.SLIDER_HEIGHT)
+
+    def getRangeRect(self):
+        return QRectF(
+            self.PADDING + ((self.width() - 2 * self.PADDING) * (self._lowValue - self._minimum) / (self._maximum - self._minimum)),
+            (self.height() - self.SLIDER_HEIGHT) / 2,
+            (self.width() - 2 * self.PADDING) * (self._highValue - self._lowValue) / (self._maximum - self._minimum),
+            self.SLIDER_HEIGHT)
+
+    def getLowHandleRect(self):
+        return QRectF(
+            self.PADDING + ((self.width() - 2 * self.PADDING) * (self._lowValue - self._minimum) / (self._maximum - self._minimum)),
+            (self.height() - self.HANDLE_SIZE) / 2,
+            self.HANDLE_SIZE,
+            self.HANDLE_SIZE)
+
+    def getHighHandleRect(self):
+        return QRectF(
+            self.PADDING + ((self.width() - 2 * self.PADDING) * (self._highValue - self._minimum) / (self._maximum - self._minimum)) - self.HANDLE_SIZE,
+            (self.height() - self.HANDLE_SIZE) / 2,
+            self.HANDLE_SIZE,
+            self.HANDLE_SIZE)
