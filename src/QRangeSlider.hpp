@@ -64,6 +64,9 @@ private:
     /** Whether the slider bar can be drag */
     bool m_bar_draggable = false;
 
+    /* Handle of the last mouse click. 0 is low handle, 1 is high handle and 2 is slider bar */
+    int m_handle_clicked = -1;
+
     /* Painter constants */
     /* Slider height in pixels */
     static constexpr unsigned int SLIDER_HEIGHT = 5;

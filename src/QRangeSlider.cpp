@@ -176,11 +176,22 @@ void QRangeSlider::setBarDraggable(bool enable)
 
 void QRangeSlider::mousePressEvent(QMouseEvent *e)
 {
-    if (e->position().y() >= (height() - SLIDER_HEIGHT - HANDLE_SIZE) / 2 && e->position().y() <= (height() - SLIDER_HEIGHT + HANDLE_SIZE) / 2) // Check if event was on slider
+    if (e->position().y() >= (height() - SLIDER_HEIGHT - HANDLE_SIZE) / 2 &&
+        e->position().y() <= (height() - SLIDER_HEIGHT + HANDLE_SIZE) / 2) // Check if event was on slider
     {
         float mouseX = e->position().x() < 0 ? 0 : e->position().x();
         unsigned int mouseValue = (mouseX / width()) * (m_maximum - m_minimum) + m_minimum;
         m_lastMouseValue = mouseValue;
+
+        int normalizedHandleSize = (static_cast<float>(HANDLE_SIZE) / width()) * (m_maximum - m_minimum);
+        if (m_lastMouseValue >= static_cast<int>(m_lowValue) - normalizedHandleSize &&
+            m_lastMouseValue < m_lowValue + normalizedHandleSize)
+            m_handle_clicked = 0;
+        else if (m_lastMouseValue >= m_highValue - normalizedHandleSize &&
+            m_lastMouseValue < m_highValue + normalizedHandleSize)
+            m_handle_clicked = 1;
+        else if (m_lastMouseValue < m_highValue && m_lastMouseValue > m_lowValue)
+            m_handle_clicked = 2;
     }
 }
 
@@ -189,25 +200,25 @@ void QRangeSlider::mouseReleaseEvent(QMouseEvent *e)
     Q_UNUSED(e);
 
     m_lastMouseValue = -1;
+    m_handle_clicked = -1;
 }
 
 void QRangeSlider::mouseMoveEvent(QMouseEvent *e)
 {
-    if (m_lastMouseValue != -1)
+    if (m_lastMouseValue != -1 && m_handle_clicked != -1)
     {
         float mouseX = e->position().x() < 0 ? 0 : e->position().x();
         unsigned int mouseValue = (mouseX / width()) * (m_maximum - m_minimum) + m_minimum;
-        int normalizedHandleSize = (static_cast<float>(HANDLE_SIZE) / width()) * (m_maximum - m_minimum);
 
-        if (m_lastMouseValue >= static_cast<int>(m_lowValue) - normalizedHandleSize && m_lastMouseValue < m_lowValue + normalizedHandleSize)
+        if (m_handle_clicked == 0)
         {
             setLowValue(mouseValue);
         }
-        else if (m_lastMouseValue >= m_highValue - normalizedHandleSize && m_lastMouseValue < m_highValue + normalizedHandleSize)
+        else if (m_handle_clicked == 1)
         {
             setHighValue(mouseValue);
         }
-        else if (m_bar_draggable && m_lastMouseValue < m_highValue && m_lastMouseValue > m_lowValue)
+        else if (m_bar_draggable && m_handle_clicked == 2)
         {
             int deltaValue = (mouseValue - m_lastMouseValue);
             if (deltaValue < 0)
