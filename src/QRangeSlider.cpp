@@ -256,36 +256,36 @@ void QRangeSlider::paintEvent(QPaintEvent* e)
     painter.end();
 }
 
-QRect QRangeSlider::getBackgroundRect() const
+QRectF QRangeSlider::getBackgroundRect() const
 {
-    return QRect(
+    return QRectF(
         PADDING,
         (height() - SLIDER_HEIGHT) / 2,
         width() - 2 * PADDING,
         SLIDER_HEIGHT);
 }
 
-QRect QRangeSlider::getRangeRect() const
+QRectF QRangeSlider::getRangeRect() const
 {
-    return QRect(
+    return QRectF(
         PADDING + ((width() - 2 * PADDING) * (lowValue_ - minimum_) / (maximum_ - minimum_)),
         (height() - SLIDER_HEIGHT) / 2,
         (width() - 2 * PADDING) * (highValue_ - lowValue_) / (maximum_ - minimum_),
         SLIDER_HEIGHT);
 }
 
-QRect QRangeSlider::getLowHandleRect() const
+QRectF QRangeSlider::getLowHandleRect() const
 {
-    return QRect(
+    return QRectF(
         PADDING + ((width() - 2 * PADDING) * (lowValue_ - minimum_) / (maximum_ - minimum_)),
         (height() - HANDLE_SIZE) / 2,
         HANDLE_SIZE,
         HANDLE_SIZE);
 }
 
-QRect QRangeSlider::getHighHandleRect() const
+QRectF QRangeSlider::getHighHandleRect() const
 {
-    return QRect(
+    return QRectF(
         PADDING + ((width() - 2 * PADDING) * (highValue_ - minimum_) / (maximum_ - minimum_)) - HANDLE_SIZE,
         (height() - HANDLE_SIZE) / 2,
         HANDLE_SIZE,

@@ -47,10 +47,10 @@ private:
     void mouseMoveEvent(QMouseEvent *e) override;
     void paintEvent(QPaintEvent *e) override;
 
-    QRect getBackgroundRect() const;
-    QRect getRangeRect() const;
-    QRect getLowHandleRect() const;
-    QRect getHighHandleRect() const;
+    QRectF getBackgroundRect() const;
+    QRectF getRangeRect() const;
+    QRectF getLowHandleRect() const;
+    QRectF getHighHandleRect() const;
 
     // Minimum range value
     unsigned int minimum_ = 0;
