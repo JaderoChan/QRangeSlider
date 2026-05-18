@@ -2,77 +2,78 @@
 #define Q_RANGE_SLIDER_HPP
 
 #include <QWidget>
+#include <QMouseEvent>
+#include <QPaintEvent>
 
 class QRangeSlider : public QWidget
 {
-
     Q_OBJECT
 
 public:
-    QRangeSlider(QWidget *parent = nullptr);
-    ~QRangeSlider();
+    explicit QRangeSlider(QWidget* parent = nullptr);
+
     unsigned int minimum() const;
     unsigned int maximum() const;
     unsigned int lowValue() const;
     unsigned int highValue() const;
-    unsigned int step() const;
-    void setStep(const unsigned int step);
-    QSize sizeHint() const override;
-    QSize minimumSizeHint() const override;
-    void setOrientation(Qt::Orientation orientation);
 
+    unsigned int step() const;
+    void setStep(unsigned int step);
+
+    void setOrientation(Qt::Orientation orientation);
     void setBarDraggable(bool enable);
 
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
+
 public slots:
-    void setMinimum(const unsigned int minimum);
-    void setMaximum(const unsigned int maximum);
-    void setLowValue(const unsigned int lowValue);
-    void setHighValue(const unsigned int highValue);
-    void setRange(const unsigned int minimum, const unsigned int maximum);
+    void setMinimum(unsigned int minimum);
+    void setMaximum(unsigned int maximum);
+    void setLowValue(unsigned int lowValue);
+    void setHighValue(unsigned int highValue);
+    void setRange(unsigned int minimum, unsigned int maximum);
 
 signals:
-    void minimumChange(unsigned int minimum);
-    void maximumChange(unsigned int maximum);
-    void lowValueChange(unsigned int lowValue);
-    void highValueChange(unsigned int highValue);
-    void rangeChange(unsigned int minimum, unsigned int maximum);
+    void minimumChanged(unsigned int minimum);
+    void maximumChanged(unsigned int maximum);
+    void lowValueChanged(unsigned int lowValue);
+    void highValueChanged(unsigned int highValue);
+    void rangeChanged(unsigned int minimum, unsigned int maximum);
 
 private:
-    void mousePressEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
-    void mouseMoveEvent(QMouseEvent *e);
-    void paintEvent(QPaintEvent *event);
+    void mousePressEvent(QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
+    void mouseMoveEvent(QMouseEvent *e) override;
+    void paintEvent(QPaintEvent *e) override;
 
-    /* Minimum range value */
-    unsigned int m_minimum = 0;
+    // Minimum range value
+    unsigned int minimum_ = 0;
+    // Maximum range value
+    unsigned int maximum_ = 100;
 
-    /* Maximum range value */
-    unsigned int m_maximum = 100;
+    // value of low handle
+    unsigned int lowValue_;
+    // Value of high handle
+    unsigned int highValue_;
 
-    /* Step value */
-    unsigned int m_step = 1;
+    // Step value
+    unsigned int step_ = 1;
 
-    /* Value of low handle */
-    unsigned int m_lowValue;
+    // Value of the last mouse click
+    int lastMouseValue_ = -1;
 
-    /* Value of high handle */
-    unsigned int m_highValue;
+    // Whether the slider bar can be drag
+    bool barDraggable_ = false;
 
-    /* Value of the last mouse click */
-    int m_lastMouseValue = -1;
+    // Handle of the last mouse click. 0 is low handle, 1 is high handle and 2 is slider bar
+    int handleClicked_ = -1;
 
-    /** Whether the slider bar can be drag */
-    bool m_bar_draggable = false;
-
-    /* Handle of the last mouse click. 0 is low handle, 1 is high handle and 2 is slider bar */
-    int m_handle_clicked = -1;
-
-    /* Painter constants */
-    /* Slider height in pixels */
+    // Painter constants
+    // Slider height in pixels
     static constexpr unsigned int SLIDER_HEIGHT = 5;
-    /* Slider handle size in pixels */
+    // Slider handle size in pixels
     static constexpr unsigned int HANDLE_SIZE = 13;
-    /* Left and Right padding in pixels */
+    // Left and Right padding in pixels
     static constexpr unsigned int PADDING = 1;
 };
 
