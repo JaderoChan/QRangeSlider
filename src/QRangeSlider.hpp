@@ -21,6 +21,8 @@ public:
     QSize minimumSizeHint() const override;
     void setOrientation(Qt::Orientation orientation);
 
+    void setBarDraggable(bool enable);
+
 public slots:
     void setMinimum(const unsigned int minimum);
     void setMaximum(const unsigned int maximum);
@@ -58,6 +60,9 @@ private:
 
     /* Value of the last mouse click */
     int m_lastMouseValue = -1;
+
+    /** Whether the slider bar can be drag */
+    bool m_bar_draggable = false;
 
     /* Painter constants */
     /* Slider height in pixels */

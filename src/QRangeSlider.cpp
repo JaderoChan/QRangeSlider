@@ -169,6 +169,11 @@ void QRangeSlider::setOrientation(Qt::Orientation orientation)
     }
 }
 
+void QRangeSlider::setBarDraggable(bool enable)
+{
+    m_bar_draggable = enable;
+}
+
 void QRangeSlider::mousePressEvent(QMouseEvent *e)
 {
     if (e->position().y() >= (height() - SLIDER_HEIGHT - HANDLE_SIZE) / 2 && e->position().y() <= (height() - SLIDER_HEIGHT + HANDLE_SIZE) / 2) // Check if event was on slider
@@ -202,7 +207,7 @@ void QRangeSlider::mouseMoveEvent(QMouseEvent *e)
         {
             setHighValue(mouseValue);
         }
-        else if (m_lastMouseValue < m_highValue && m_lastMouseValue > m_lowValue)
+        else if (m_bar_draggable && m_lastMouseValue < m_highValue && m_lastMouseValue > m_lowValue)
         {
             int deltaValue = (mouseValue - m_lastMouseValue);
             if (deltaValue < 0)
