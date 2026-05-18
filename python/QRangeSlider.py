@@ -15,6 +15,12 @@ class QRangeSlider(QWidget):
 
     # Value of the last mouse click
     _lastMouseValue = -1
+    
+    # Whether the slider bar can be drag
+    _barDraggable = False
+
+    # Handle of the last mouse click. 0 is low handle, 1 is high handle and 2 is slider bar
+    _handleClicked = -1
 
     # Painter constants
     # Slider height in pixels
@@ -91,7 +97,7 @@ class QRangeSlider(QWidget):
     def setLowValue(self, lowValue):
         if self._lowValue != lowValue:
             self._lowValue = lowValue
-            if self._lowValue > self._maximum:
+            if self._lowValue >= self._maximum:
                 self._lowValue = self._maximum - 1
             if self._lowValue < self._minimum:
                 self._lowValue = self._minimum
@@ -110,7 +116,7 @@ class QRangeSlider(QWidget):
             self._highValue = highValue
             if self._highValue > self._maximum:
                 self._highValue = self._maximum
-            if self._highValue < self._minimum:
+            if self._highValue <= self._minimum:
                 self._highValue = self._minimum + 1
             if self._highValue <= self._lowValue:
                 self.setLowValue(self._lowValue - 1)
@@ -135,6 +141,9 @@ class QRangeSlider(QWidget):
     def minimumSizeHint(self):
         return QSize(2 * self.HANDLE_SIZE + 2 * self.PADDING, 2 * self.HANDLE_SIZE)
 
+    def setBarDraggable(self, enable):
+        self._barDraggable = enable
+
     def mousePressEvent(self, mouseEvent):
         # Check if event was on slider
         if mouseEvent.pos().y() >= (self.height() - self.SLIDER_HEIGHT - self.HANDLE_SIZE) / 2 and mouseEvent.pos().y() <= (self.height() - self.SLIDER_HEIGHT + self.HANDLE_SIZE) / 2:
@@ -142,19 +151,27 @@ class QRangeSlider(QWidget):
             mouseValue = int((mouseX / self.width()) * (self._maximum - self._minimum) + self._minimum)
             self._lastMouseValue = mouseValue
 
+            if self._lastMouseValue >= self._lowValue - 1 and self._lastMouseValue < self._lowValue + 1:
+                self._handleClicked = 0
+            elif self._lastMouseValue >= self._highValue -1 and self._lastMouseValue < self._highValue + 1:
+                self._handleClicked = 1
+            elif self._lastMouseValue < self._highValue and self._lastMouseValue > self._lowValue:
+                self._handleClicked = 2
+
     def mouseReleaseEvent(self, mouseEvent):
         self._lastMouseValue = -1
+        self._handleClicked = -1
 
     def mouseMoveEvent(self, mouseEvent):
-        if self._lastMouseValue != -1:
+        if self._lastMouseValue != -1 and self._handleClicked != -1:
             mouseX = 0 if mouseEvent.pos().x() < 0 else mouseEvent.pos().x()
             mouseValue = int((mouseX / self.width()) * (self._maximum - self._minimum) + self._minimum)
 
-            if self._lastMouseValue >= self._lowValue - 1 and self._lastMouseValue < self._lowValue + 1:
+            if self._handleClicked == 0:
                 self.setLowValue(mouseValue)
-            elif self._lastMouseValue >= self._highValue -1 and self._lastMouseValue < self._highValue + 1:
+            elif self._handleClicked == 1:
                 self.setHighValue(mouseValue)
-            elif self._lastMouseValue < self._highValue and self._lastMouseValue > self._lowValue:
+            elif self._handleClicked == 2:
                 deltaValue = (mouseValue - self._lastMouseValue)
                 self.setLowValue(self._lowValue + deltaValue)
                 self.setHighValue(self._highValue + deltaValue)
