@@ -89,7 +89,7 @@ void QRangeSlider::setLowValue(const unsigned int lowValue)
     if (m_lowValue != lowValue)
     {
         m_lowValue = lowValue;
-        if (m_lowValue > m_maximum)
+        if (m_lowValue >= m_maximum)
         {
             m_lowValue = m_maximum - 1;
         }
@@ -121,7 +121,7 @@ void QRangeSlider::setHighValue(const unsigned int highValue)
         {
             m_highValue = m_maximum;
         }
-        if (m_highValue < m_minimum)
+        if (m_highValue <= m_minimum)
         {
             m_highValue = m_minimum + 1;
         }
