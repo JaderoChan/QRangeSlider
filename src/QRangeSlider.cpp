@@ -101,7 +101,7 @@ void QRangeSlider::setMaximum(unsigned int maximum)
 
         if (maximum_ <= minimum_)
         {
-            setMinimum(maximum_++);
+            setMinimum(maximum_ - 1);
             setLowValue(minimum_);
             setHighValue(maximum_);
         }
