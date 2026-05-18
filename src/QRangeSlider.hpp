@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QRect>
 
 class QRangeSlider : public QWidget
 {
@@ -45,6 +46,11 @@ private:
     void mouseReleaseEvent(QMouseEvent *e) override;
     void mouseMoveEvent(QMouseEvent *e) override;
     void paintEvent(QPaintEvent *e) override;
+
+    QRect getBackgroundRect() const;
+    QRect getRangeRect() const;
+    QRect getLowHandleRect() const;
+    QRect getHighHandleRect() const;
 
     // Minimum range value
     unsigned int minimum_ = 0;

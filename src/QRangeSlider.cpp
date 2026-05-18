@@ -177,23 +177,12 @@ void QRangeSlider::mousePressEvent(QMouseEvent* e)
         unsigned int mouseValue = (mouseX / width()) * (maximum_ - minimum_) + minimum_;
         lastMouseValue_ = mouseValue;
 
-        int normalizedHandleSize = (static_cast<double>(HANDLE_SIZE) / width()) * (maximum_ - minimum_);
-
-        if (lastMouseValue_ >= (static_cast<int>(lowValue_) - normalizedHandleSize) &&
-            lastMouseValue_ <= (lowValue_ + normalizedHandleSize))
-        {
+        if (getLowHandleRect().contains(e->pos()))
             handleClicked_ = 0;
-        }
-        else if (lastMouseValue_ >= (highValue_ - normalizedHandleSize) &&
-            lastMouseValue_ <= (highValue_ + normalizedHandleSize))
-        {
+        else if (getHighHandleRect().contains(e->pos()))
             handleClicked_ = 1;
-        }
-        else if (lastMouseValue_ > lowValue_ &&
-            lastMouseValue_ < highValue_)
-        {
+        else if (getRangeRect().contains(e->pos()))
             handleClicked_ = 2;
-        }
     }
 }
 
@@ -251,40 +240,54 @@ void QRangeSlider::paintEvent(QPaintEvent* e)
     // Draw background
     painter.setPen(QPen(Qt::GlobalColor::darkGray, 0.8));
     painter.setBrush(QBrush(QColor(Qt::GlobalColor::lightGray)));
-    painter.drawRoundedRect(
-        PADDING,
-        (height() - SLIDER_HEIGHT) / 2,
-        width() - 2 * PADDING,
-        SLIDER_HEIGHT,
-        2,
-        2);
+    painter.drawRoundedRect(getBackgroundRect(), 2, 2);
 
     // Draw range
     painter.setBrush(QBrush(QColor(0x1E, 0x90, 0xFF)));
-    painter.drawRect(
+    painter.drawRect(getRangeRect());
+
+    // Draw lower handle
+    painter.setBrush(QBrush(QColor(Qt::GlobalColor::white)));
+    painter.drawRoundedRect(getLowHandleRect(), 2, 2);
+
+    // Draw higher handle
+    painter.drawRoundedRect(getHighHandleRect(), 2, 2);
+
+    painter.end();
+}
+
+QRect QRangeSlider::getBackgroundRect() const
+{
+    return QRect(
+        PADDING,
+        (height() - SLIDER_HEIGHT) / 2,
+        width() - 2 * PADDING,
+        SLIDER_HEIGHT);
+}
+
+QRect QRangeSlider::getRangeRect() const
+{
+    return QRect(
         PADDING + ((width() - 2 * PADDING) * (lowValue_ - minimum_) / (maximum_ - minimum_)),
         (height() - SLIDER_HEIGHT) / 2,
         (width() - 2 * PADDING) * (highValue_ - lowValue_) / (maximum_ - minimum_),
         SLIDER_HEIGHT);
+}
 
-    // Draw lower handle
-    painter.setBrush(QBrush(QColor(Qt::GlobalColor::white)));
-    painter.drawRoundedRect(
+QRect QRangeSlider::getLowHandleRect() const
+{
+    return QRect(
         PADDING + ((width() - 2 * PADDING) * (lowValue_ - minimum_) / (maximum_ - minimum_)),
         (height() - HANDLE_SIZE) / 2,
         HANDLE_SIZE,
-        HANDLE_SIZE,
-        2,
-        2);
+        HANDLE_SIZE);
+}
 
-    // Draw higher handle
-    painter.drawRoundedRect(
+QRect QRangeSlider::getHighHandleRect() const
+{
+    return QRect(
         PADDING + ((width() - 2 * PADDING) * (highValue_ - minimum_) / (maximum_ - minimum_)) - HANDLE_SIZE,
         (height() - HANDLE_SIZE) / 2,
         HANDLE_SIZE,
-        HANDLE_SIZE,
-        2,
-        2);
-
-    painter.end();
+        HANDLE_SIZE);
 }
