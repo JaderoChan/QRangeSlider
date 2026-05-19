@@ -121,7 +121,7 @@ class QRangeSlider(QWidget):
             if self._highValue <= self._minimum:
                 self._highValue = self._minimum + 1
             if self._highValue <= self._lowValue:
-                self.setLowValue(self._lowValue - 1)
+                self.setLowValue(self._highValue - 1)
 
             self.update()
             self.highValueChange.emit(self._highValue)
@@ -217,15 +217,16 @@ class QRangeSlider(QWidget):
             self.SLIDER_HEIGHT)
 
     def getLowHandleRect(self):
-        return QRectF(
-            self.PADDING + ((self.width() - 2 * self.PADDING) * (self._lowValue - self._minimum) / (self._maximum - self._minimum)),
-            (self.height() - self.HANDLE_SIZE) / 2,
-            self.HANDLE_SIZE,
-            self.HANDLE_SIZE)
+        trackWidth = self.width() - 2.0 * self.PADDING
+        lowX = self.PADDING + trackWidth * (self._lowValue - self._minimum) / (self._maximum - self._minimum)
+        highX = self.PADDING + trackWidth * (self._highValue - self._minimum) / (self._maximum - self._minimum)
+        x = min(lowX, highX - self.HANDLE_SIZE)
+        return QRectF(x, (self.height() - self.HANDLE_SIZE) / 2, self.HANDLE_SIZE, self.HANDLE_SIZE)
 
     def getHighHandleRect(self):
-        return QRectF(
-            self.PADDING + ((self.width() - 2 * self.PADDING) * (self._highValue - self._minimum) / (self._maximum - self._minimum)) - self.HANDLE_SIZE,
-            (self.height() - self.HANDLE_SIZE) / 2,
-            self.HANDLE_SIZE,
-            self.HANDLE_SIZE)
+        trackWidth = self.width() - 2.0 * self.PADDING
+        lowX = self.PADDING + trackWidth * (self._lowValue - self._minimum) / (self._maximum - self._minimum)
+        highX = self.PADDING + trackWidth * (self._highValue - self._minimum) / (self._maximum - self._minimum)
+        lowHandleX = min(lowX, highX - self.HANDLE_SIZE)
+        x = max(highX - self.HANDLE_SIZE, lowHandleX + self.HANDLE_SIZE)
+        return QRectF(x, (self.height() - self.HANDLE_SIZE) / 2, self.HANDLE_SIZE, self.HANDLE_SIZE)
