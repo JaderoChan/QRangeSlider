@@ -146,7 +146,9 @@ class QRangeSlider(QWidget):
     def setBarDraggable(self, enable):
         self._barDraggable = enable
 
-    def mousePressEvent(self, a0):
+    def mousePressEvent(self, a0: QMouseEvent | None):
+        if a0 is None:
+            return
         # Check if event was on slider
         if a0.pos().y() >= (self.height() - self.SLIDER_HEIGHT - self.HANDLE_SIZE) / 2 and a0.pos().y() <= (self.height() - self.SLIDER_HEIGHT + self.HANDLE_SIZE) / 2:
             mouseX = 0 if a0.pos().x() < 0 else a0.pos().x()
@@ -160,11 +162,14 @@ class QRangeSlider(QWidget):
             if (self.getRangeRect().contains(a0.pos())):
                 self._handleClicked = 2
 
-    def mouseReleaseEvent(self, a0):
+    def mouseReleaseEvent(self, a0: QMouseEvent | None):
         self._lastMouseValue = -1
         self._handleClicked = -1
 
-    def mouseMoveEvent(self, a0):
+    def mouseMoveEvent(self, a0: QMouseEvent | None):
+        if a0 is None:
+            return
+
         if self._lastMouseValue != -1 and self._handleClicked != -1:
             mouseX = 0 if a0.pos().x() < 0 else a0.pos().x()
             mouseValue = int((mouseX / self.width()) * (self._maximum - self._minimum) + self._minimum)
@@ -180,7 +185,10 @@ class QRangeSlider(QWidget):
 
             self._lastMouseValue = mouseValue
 
-    def paintEvent(self, a0):
+    def paintEvent(self, a0: QPaintEvent | None):
+        if a0 is None:
+            return
+
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
