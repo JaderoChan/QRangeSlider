@@ -1,6 +1,6 @@
 #include "main_window.hpp"
 
-#include "../src/QRangeSlider.hpp"
+#include "../cpp/QRangeSlider.hpp"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
