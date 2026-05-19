@@ -146,27 +146,27 @@ class QRangeSlider(QWidget):
     def setBarDraggable(self, enable):
         self._barDraggable = enable
 
-    def mousePressEvent(self, mouseEvent):
+    def mousePressEvent(self, a0):
         # Check if event was on slider
-        if mouseEvent.pos().y() >= (self.height() - self.SLIDER_HEIGHT - self.HANDLE_SIZE) / 2 and mouseEvent.pos().y() <= (self.height() - self.SLIDER_HEIGHT + self.HANDLE_SIZE) / 2:
-            mouseX = 0 if mouseEvent.pos().x() < 0 else mouseEvent.pos().x()
+        if a0.pos().y() >= (self.height() - self.SLIDER_HEIGHT - self.HANDLE_SIZE) / 2 and a0.pos().y() <= (self.height() - self.SLIDER_HEIGHT + self.HANDLE_SIZE) / 2:
+            mouseX = 0 if a0.pos().x() < 0 else a0.pos().x()
             mouseValue = int((mouseX / self.width()) * (self._maximum - self._minimum) + self._minimum)
             self._lastMouseValue = mouseValue
 
-            if (self.getLowHandleRect().contains(mouseEvent.pos())):
+            if (self.getLowHandleRect().contains(a0.pos())):
                 self._handleClicked = 0
-            if (self.getHighHandleRect().contains(mouseEvent.pos())):
+            if (self.getHighHandleRect().contains(a0.pos())):
                 self._handleClicked = 1
-            if (self.getRangeRect().contains(mouseEvent.pos())):
+            if (self.getRangeRect().contains(a0.pos())):
                 self._handleClicked = 2
 
-    def mouseReleaseEvent(self, mouseEvent):
+    def mouseReleaseEvent(self, a0):
         self._lastMouseValue = -1
         self._handleClicked = -1
 
-    def mouseMoveEvent(self, mouseEvent):
+    def mouseMoveEvent(self, a0):
         if self._lastMouseValue != -1 and self._handleClicked != -1:
-            mouseX = 0 if mouseEvent.pos().x() < 0 else mouseEvent.pos().x()
+            mouseX = 0 if a0.pos().x() < 0 else a0.pos().x()
             mouseValue = int((mouseX / self.width()) * (self._maximum - self._minimum) + self._minimum)
 
             if self._handleClicked == 0:
@@ -180,7 +180,7 @@ class QRangeSlider(QWidget):
 
             self._lastMouseValue = mouseValue
 
-    def paintEvent(self, paintEvent):
+    def paintEvent(self, a0):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
