@@ -14,7 +14,7 @@ INCLUDEPATH += .
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 # Input
-HEADERS += main_window.hpp ../src/QRangeSlider.hpp
-SOURCES += main.cpp main_window.cpp ../src/QRangeSlider.cpp
+HEADERS += main_window.hpp ../cpp/QRangeSlider.hpp
+SOURCES += main.cpp main_window.cpp ../cpp/QRangeSlider.cpp
 
 QT += widgets
